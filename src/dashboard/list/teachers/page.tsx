@@ -53,7 +53,7 @@ type Teacher = {
 export default function TeachersList() {
 	const [teachers, setTeachers] = React.useState<Teacher[]>([]);
 	const [statusOptions, setStatusOptions] = React.useState<any[]>([]);
-	const [columns, setColumns] = React.useState([
+	const [columns] = React.useState([
 		{ uid: "id", name: "ID", sortable: true },
 		{ uid: "name", name: "NAME", sortable: true },
 		{ uid: "age", name: "AGE", sortable: true },
