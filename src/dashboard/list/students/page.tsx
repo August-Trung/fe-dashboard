@@ -139,7 +139,7 @@ export default function StudentsList() {
 
 	// Lọc sinh viên theo từ khóa tìm kiếm và status filter
 	const filteredItems = React.useMemo(() => {
-		let filtered = [...students];
+		let filtered = Array.isArray(students) ? [...students] : [];
 		if (hasSearchFilter) {
 			filtered = filtered.filter((student) =>
 				student.name.toLowerCase().includes(filterValue.toLowerCase())
@@ -229,10 +229,11 @@ export default function StudentsList() {
 	const onRowsPerPageChange = React.useCallback(
 		(e: React.ChangeEvent<HTMLSelectElement>) => {
 			const value = Number(e.target.value);
-			setRowsPerPage(value === -1 ? students.length : value);
+			// Make sure students is defined before accessing its length
+			setRowsPerPage(value === -1 && students ? students.length : value);
 			setPage(1);
 		},
-		[students.length]
+		[students] // Make sure you include students in the dependency array to trigger updates when it changes
 	);
 
 	const onSearchChange = React.useCallback((value?: string) => {
@@ -278,7 +279,8 @@ export default function StudentsList() {
 			</div>
 			<div className="flex justify-between items-center">
 				<span className="text-default-400 text-small">
-					Total {students.length} students
+					Total {Array.isArray(students) ? students.length : 0}{" "}
+					students
 				</span>
 				<Select
 					className="max-w-[180px]"

@@ -60,11 +60,18 @@ export default function Filters({
 					selectedKeys={statusFilter}
 					selectionMode="multiple"
 					onSelectionChange={onStatusChange}>
-					{statusOptions.map((status) => (
-						<DropdownItem key={status} className="capitalize">
-							{status}
-						</DropdownItem>
-					))}
+					{Array.isArray(statusOptions) &&
+					statusOptions.length > 0 ? (
+						statusOptions.map((status) => (
+							<DropdownItem key={status} className="capitalize">
+								{status}
+							</DropdownItem>
+						))
+					) : (
+						<DropdownItem isDisabled key="no-options">
+							No options available
+						</DropdownItem> // Show fallback if no options
+					)}
 				</DropdownMenu>
 			</Dropdown>
 			<Dropdown>

@@ -85,7 +85,7 @@ export default function TeachersList() {
 		const fetchTeachers = async () => {
 			try {
 				const response = await axios.get(
-					"http://localhost/3500/teachers/api/get-all-teachers"
+					"/teachers/api/get-all-teachers"
 				);
 				setTeachers(response.data.teachers);
 			} catch (error) {
@@ -124,7 +124,7 @@ export default function TeachersList() {
 	}, [visibleColumns]);
 
 	const filteredItems = React.useMemo(() => {
-		let filteredTeachers = [...teachers];
+		let filteredTeachers = Array.isArray(teachers) ? [...teachers] : [];
 
 		if (hasSearchFilter) {
 			filteredTeachers = filteredTeachers.filter((teacher) =>
@@ -264,11 +264,12 @@ export default function TeachersList() {
 
 	const onRowsPerPageChange = React.useCallback(
 		(e: React.ChangeEvent<HTMLSelectElement>) => {
+			// Ensure teachers is defined and has a length
 			const value = Number(e.target.value);
-			setRowsPerPage(value === -1 ? teachers.length : value);
+			setRowsPerPage(value === -1 ? (teachers?.length ?? 0) : value); // Default to 0 if teachers is undefined
 			setPage(1);
 		},
-		[teachers.length]
+		[teachers] // Depend on the teachers array itself
 	);
 
 	const onSearchChange = React.useCallback((value?: string) => {
@@ -317,13 +318,20 @@ export default function TeachersList() {
 								selectedKeys={statusFilter}
 								selectionMode="multiple"
 								onSelectionChange={setStatusFilter}>
-								{statusOptions.map((status) => (
-									<DropdownItem
-										key={status}
-										className="capitalize">
-										{capitalize(status)}
-									</DropdownItem>
-								))}
+								{Array.isArray(statusOptions) &&
+								statusOptions.length > 0 ? (
+									statusOptions.map((status) => (
+										<DropdownItem
+											key={status}
+											className="capitalize">
+											{capitalize(status)}
+										</DropdownItem>
+									))
+								) : (
+									<DropdownItem isDisabled key="no-options">
+										No options available
+									</DropdownItem> // Show fallback if no options
+								)}
 							</DropdownMenu>
 						</Dropdown>
 						<Dropdown>
@@ -359,7 +367,7 @@ export default function TeachersList() {
 				</div>
 				<div className="flex justify-between items-center">
 					<span className="text-default-400 text-small">
-						Total {teachers.length} teachers
+						Total {teachers?.length ?? 0} teachers
 					</span>
 					<label className="flex items-center text-default-400 text-small">
 						Rows per page:
@@ -381,7 +389,7 @@ export default function TeachersList() {
 		visibleColumns,
 		onSearchChange,
 		onRowsPerPageChange,
-		teachers.length,
+		teachers,
 		hasSearchFilter,
 	]);
 
